@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 interface MailOptions {
   to: string;
@@ -26,11 +26,11 @@ export const verifyMailConnection = async (): Promise<boolean> => {
 export const sendMail = async (options: MailOptions): Promise<boolean> => {
   try {
     await sgMail.send({
-      from: process.env.MAIL_FROM!,
+      from: process.env.MAIL_FROM || '',
       to: options.to,
       subject: options.subject,
-      text: options.text,
-      html: options.html,
+      text: options.text || '',
+      html: options.html || '',
     });
     return true;
   } catch (error) {
