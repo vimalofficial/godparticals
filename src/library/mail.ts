@@ -23,21 +23,57 @@ export const verifyMailConnection = async (): Promise<boolean> => {
   }
 };
 
+// export const sendMail = async (options: MailOptions): Promise<boolean> => {
+//   try {
+//     await sgMail.send({
+//       from: process.env.MAIL_FROM || '',
+//       to: options.to,
+//       subject: options.subject,
+//       text: options.text || '',
+//       html: options.html || '',
+//     });
+//     return true;
+//   } catch (error) {
+//     console.error('Failed to send email:', JSON.stringify(error, null, 2));
+//     return false;
+//   }
+// };
+
 export const sendMail = async (options: MailOptions): Promise<boolean> => {
   try {
     await sgMail.send({
-      from: process.env.MAIL_FROM || '',
       to: options.to,
+      from: {
+        email: process.env.MAIL_FROM!,
+        name: "God Particals",
+      },
+      replyTo: process.env.MAIL_FROM!,
       subject: options.subject,
-      text: options.text || '',
-      html: options.html || '',
+      text: options.text || "Please view this email in HTML format.",
+      html: options.html || "",
+      trackingSettings: {
+        clickTracking: {
+          enable: false,
+          enableText: false,
+        },
+        openTracking: {
+          enable: false,
+        },
+      },
+      mailSettings: {
+        sandboxMode: {
+          enable: false,
+        },
+      },
     });
+
     return true;
   } catch (error) {
-    console.error('Failed to send email:', JSON.stringify(error, null, 2));
+    console.error("Failed to send email:", error);
     return false;
   }
 };
+
 
 export const generateOTP = (length: number = 6): string => {
   const digits = '0123456789';
