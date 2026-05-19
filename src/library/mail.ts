@@ -4,15 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST,
-  port: Number(process.env.BREVO_SMTP_PORT) || 587,
-  secure: false,
+  service: 'gmail',
   auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS,
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // fix: self-signed certificate error
   },
 });
 
@@ -26,10 +24,10 @@ interface MailOptions {
 export const verifyMailConnection = async (): Promise<boolean> => {
   try {
     await transporter.verify();
-    console.log('✅ Brevo SMTP connection verified');
+    console.log('✅ Gmail SMTP connection verified');
     return true;
   } catch (error) {
-    console.error('❌ Brevo SMTP connection failed:', error);
+    console.error('❌ Gmail SMTP connection failed:', error);
     return false;
   }
 };
@@ -37,7 +35,7 @@ export const verifyMailConnection = async (): Promise<boolean> => {
 export const sendMail = async (options: MailOptions): Promise<boolean> => {
   try {
     await transporter.sendMail({
-      from: process.env.MAIL_FROM,
+      from: process.env.MAIL_USER,
       to: options.to,
       subject: options.subject,
       text: options.text,
