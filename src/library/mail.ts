@@ -1,20 +1,9 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // use SSL
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 interface MailOptions {
   to: string;
@@ -25,19 +14,19 @@ interface MailOptions {
 
 export const verifyMailConnection = async (): Promise<boolean> => {
   try {
-    await transporter.verify();
-    console.log('✅ Gmail SMTP connection verified');
+    if (!process.env.SENDGRID_API_KEY) throw new Error('SENDGRID_API_KEY missing');
+    console.log('✅ SendGrid mail service ready');
     return true;
   } catch (error) {
-    console.error('❌ Gmail SMTP connection failed:', error);
+    console.error('❌ SendGrid setup failed:', error);
     return false;
   }
 };
 
 export const sendMail = async (options: MailOptions): Promise<boolean> => {
   try {
-    await transporter.sendMail({
-      from: process.env.MAIL_USER,
+    await sgMail.send({
+      from: process.env.MAIL_FROM!,
       to: options.to,
       subject: options.subject,
       text: options.text,
