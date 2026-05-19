@@ -37,7 +37,7 @@ export const userOnboardService = {
 
     otpStore.set(email, { otp, expiresAt, name });
 
-    const sent = await sendOTPEmail(email, otp, name);
+    const sent = await sendOTPEmail(email, otp,);
     if (!sent) throw new Error('Failed to send OTP email. Check SMTP config.');
 
     return { message: 'OTP sent successfully. Check your email.' };
