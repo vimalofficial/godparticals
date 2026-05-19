@@ -1,10 +1,11 @@
 import nodemailer from 'nodemailer';
-import config from '../config';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.BREVO_SMTP_HOST,
-  port: Number(process.env.BREVO_SMTP_PORT),
+  port: Number(process.env.BREVO_SMTP_PORT) || 587,
   secure: false,
   auth: {
     user: process.env.BREVO_SMTP_USER,
@@ -14,7 +15,6 @@ const transporter = nodemailer.createTransport({
     rejectUnauthorized: false,
   },
 });
-
 
 interface MailOptions {
   to: string;
@@ -37,7 +37,7 @@ export const verifyMailConnection = async (): Promise<boolean> => {
 export const sendMail = async (options: MailOptions): Promise<boolean> => {
   try {
     await transporter.sendMail({
-      from: 'vimalpk.official@gmail.com',   // your verified sender email
+      from: process.env.MAIL_FROM,
       to: options.to,
       subject: options.subject,
       text: options.text,
